@@ -186,7 +186,7 @@ curl -X POST http://127.0.0.1:8000/api/tasks/analyze/ \
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/smart-task-analyzer.git
+git clone https://github.com/SoftApplee/smart-task-analyzer.git
 cd smart-task-analyzer
 ```
 
@@ -247,7 +247,7 @@ This project is licensed under the **MIT License** — feel free to use, modify,
 ## 👤 Author
 
 **Rakshit**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
+- GitHub: [@SoftApplee](https://github.com/SoftApplee)
 
 ---
 
