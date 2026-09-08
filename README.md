@@ -1,116 +1,256 @@
-# 🚀 Singularium Smart Task Analyzer
+# 🚀 Singularium — Smart Task Analyzer
 
-A high-performance task prioritization engine with a **SaaS-style Dark Mode Dashboard**.
+<div align="center">
 
-This project solves the "Task Paralysis" problem by using a **Weighted Decay Algorithm** to intelligently score and rank tasks. Unlike simple to-do lists, this engine understands **Dependency Graphs**, **Urgency Decay**, and **Opportunity Costs**.
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-4.0+-092E20?style=for-the-badge&logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/Django_REST-Framework-red?style=for-the-badge&logo=django&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+**An intelligent task prioritization engine with a SaaS-style dark-mode dashboard.**
+
+*Solves "Task Paralysis" using a custom Weighted Decay Algorithm — not just a to-do list.*
+
+</div>
 
 ---
 
-## 📸 Features
+## 📸 Screenshots
 
-* **🧠 Smart Scoring Engine:** A heuristic algorithm that calculates a "Priority Score" (0-100) based on 4 vectors.
-* **📊 Pro Dashboard UI:** A split-screen, dark-themed interface built for productivity.
-* **🕸️ Dependency Gravity:** Tasks that block other important tasks are automatically promoted to the top.
-* **📉 Urgency Curves:** Implements exponential decay for deadlines (tasks due tomorrow are 10x more urgent than tasks due next week).
+### 🏠 Main Dashboard
+![Homepage](./Images/Homepage.png)
+
+### 🧠 Smart Strategy Selection
+![Smart Strategy](./Images/Smart.png)
+
+### ⚡ Quick Session Mode
+![Quick Session](./Images/Quicksession.png)
+
+### 💥 Impact Analysis
+![Impact Analysis](./Images/Impact.png)
+
+### 📅 Date-Based Sorting
+![Date Sorting](./Images/Date.png)
 
 ---
 
-## 🛠️ Setup Instructions
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 🧠 **Smart Scoring Engine** | Custom algorithm scores every task 0–100 using 4 weighted vectors |
+| 🕸️ **Dependency Gravity** | Tasks blocking other important tasks are automatically promoted |
+| 📉 **Urgency Decay Curve** | Hyperbolic decay — tasks due tomorrow score 10× higher than next week |
+| ⚡ **Quick Wins Mode** | Promotes short tasks to keep momentum going |
+| 📊 **4 Sort Strategies** | Switch between Smart, Deadline, Impact, and Quick Wins instantly |
+| 🔐 **JWT Authentication** | Secure user register/login with token-based auth |
+| 🎨 **Dark SaaS Dashboard** | Sleek split-panel UI with color-coded priority indicators |
+| 🛡️ **Circular Dependency Guard** | Model-level validation prevents A→B→A dependency loops |
+
+---
+
+## 🧠 Algorithm — The "Secret Sauce"
+
+The core of this project is the [`SmartScoringEngine`](./tasks/engine.py) class. It calculates a **Priority Score** using a weighted multi-vector formula:
+
+$$Score = Urgency + (Importance \times 3.5) + EffortBonus + DependencyGravity$$
+
+### 1. ⏰ Urgency — Hyperbolic Decay
+```
+urgency = 30 / (days_until_due + 1)
+```
+- Tasks due **tomorrow** score exponentially higher than tasks due next week
+- **Overdue tasks** skip the curve and get a static Critical penalty of **50 pts**
+
+### 2. ⭐ Strategic Importance
+```
+importance_score = importance_rating × 3.5
+```
+- Rated 1–10 by the user, multiplied by 3.5
+- Ensures high-importance strategic work always outweighs low-value busy work
+
+### 3. ⚡ Effort Bonus (Quick Wins)
+```
+effort_bonus = 10 / max(estimated_hours, 1)
+```
+- Short tasks (< 2 hours) receive a micro-bonus
+- Encourages clearing small blockers first to build momentum
+
+### 4. 🕸️ Dependency Gravity
+```
+dep_bonus = number_of_tasks_blocked × 5
+```
+- If your task blocks 3 other tasks, it gets +15 pts automatically
+- Ensures bottlenecks are cleared first, even if the task itself seems unimportant
+
+---
+
+## 📊 Prioritization Strategies
+
+Switch between strategies in the dashboard in real time:
+
+| Strategy | Logic | Best For |
+|---|---|---|
+| 🧠 **Smart Balance** | Full algorithm (all 4 vectors) | Daily use — the recommended default |
+| 📅 **Deadline** | `100 - (days × 2)` — closest due date wins | When you have hard deadlines |
+| 💥 **Impact** | `importance × 10` — highest rated task wins | Strategic planning sessions |
+| ⚡ **Quick Wins** | `100 - (hours × 2)` — shortest task wins | Busy days, need to feel progress |
+
+---
+
+## 🏗️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Backend** | Python 3.8+, Django 4.0+ |
+| **REST API** | Django REST Framework |
+| **Authentication** | JWT via `djangorestframework-simplejwt` |
+| **Database** | SQLite (default), swappable via Django settings |
+| **CORS** | `django-cors-headers` |
+| **Frontend** | Vanilla HTML5, CSS3 (CSS Variables), JavaScript ES6 (Fetch API) |
+
+---
+
+## 📁 Project Structure
+
+```
+smart-task-analyzer/
+│
+├── backend/                  # Django project configuration
+│   ├── settings.py           # Project settings
+│   ├── urls.py               # Root URL routing
+│   └── wsgi.py
+│
+├── tasks/                    # Core app
+│   ├── engine.py             # 🧠 SmartScoringEngine — the algorithm
+│   ├── models.py             # Task model with self-referencing dependency graph
+│   ├── views.py              # REST API views (create & analyze)
+│   ├── auth_views.py         # JWT register/login endpoints
+│   ├── serializers.py        # DRF serializers
+│   └── urls.py               # App-level URL routing
+│
+├── frontend/                 # Static frontend (no build step needed)
+│   ├── index.html            # Dashboard UI
+│   ├── main.js               # Fetch API calls + dynamic rendering
+│   └── style.css             # Dark mode SaaS styling with CSS Variables
+│
+├── Images/                   # UI screenshots
+├── manage.py
+├── requirements.txt
+└── .gitignore
+```
+
+---
+
+## 🔌 API Endpoints
+
+Base URL: `http://127.0.0.1:8000/api/`
+
+| Method | Endpoint | Description | Body |
+|---|---|---|---|
+| `POST` | `/tasks/create/` | Create a new task | `title, due_date, importance, estimated_hours, dependencies` |
+| `POST` | `/tasks/analyze/` | Analyze & rank all tasks | `strategy` (`smart_balance` / `deadline` / `impact` / `quick_wins`) |
+| `POST` | `/auth/register/` | Register a new user | `username, password, email` |
+| `POST` | `/auth/login/` | Login and get JWT tokens | `username, password` |
+
+### Example: Analyze Tasks
+```bash
+curl -X POST http://127.0.0.1:8000/api/tasks/analyze/ \
+  -H "Content-Type: application/json" \
+  -d '{"strategy": "smart_balance"}'
+```
+
+### Example Response
+```json
+[
+  {
+    "id": 3,
+    "title": "Fix API Latency",
+    "due_date": "2024-01-15",
+    "importance": 9,
+    "estimated_hours": 2,
+    "score": 47.5,
+    "explanation": "Due very soon, High Importance, Blocks 2 tasks"
+  }
+]
+```
+
+---
+
+## 🛠️ Setup & Installation
 
 ### Prerequisites
-* Python 3.8+
-* Pip
+- Python 3.8+
+- pip
 
-### Installation
-1.  **Clone the repository**
-    ```bash
-    git clone <your-repo-link-here>
-    cd smart_task_manager
-    ```
+### 1. Clone the Repository
+```bash
+git clone https://github.com/YOUR_USERNAME/smart-task-analyzer.git
+cd smart-task-analyzer
+```
 
-2.  **Install Dependencies**
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 2. Create a Virtual Environment (Recommended)
+```bash
+python -m venv venv
+source venv/bin/activate      # macOS/Linux
+venv\Scripts\activate         # Windows
+```
 
-3.  **Initialize Database**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
-4.  **Run the Application**
-    ```bash
-    python manage.py runserver
-    ```
-    * **Dashboard:** Open `frontend/index.html` in your browser.
-    * **API:** `http://127.0.0.1:8000/api/tasks/analyze/`
+### 4. Initialize the Database
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
 
----
+### 5. Run the Backend Server
+```bash
+python manage.py runserver
+```
 
-## 🧠 Algorithm Explanation (The "Secret Sauce")
+### 6. Open the Dashboard
+Open `frontend/index.html` directly in your browser.
 
-The core of this project is the `SmartScoringEngine` class. It avoids linear sorting by using a weighted sum formula:
-
-$$ Score = (U \times W_u) + (I \times W_i) + (E \times W_e) + (D \times W_d) $$
-
-### 1. Urgency (U) - The Decay Function
-I avoided linear days-counting. Instead, I used a hyperbolic decay function: `30 / (days + 1)`.
-* *Result:* A task due in 24 hours scores exponentially higher than one due in 3 days.
-* *Edge Case:* Past-due tasks break the curve and receive a static "Critical" penalty.
-
-### 2. Dependency Gravity (D) - The Graph Logic
-This is the unique feature. The engine checks the **Dependency Graph** defined in `models.py`.
-* If **Task A** blocks **Task B**, and **Task B** is "High Importance," then **Task A** inherits a "Gravity Bonus."
-* This ensures bottlenecks are cleared first, even if the blocking task itself seems trivial.
-
-### 3. Strategic Importance (I) & Effort (E)
-* **Importance:** Multiplied by 3.5 to ensure strategic goals always outweigh busy work.
-* **Effort:** In "Quick Wins" mode, tasks under 2 hours receive a micro-bonus to encourage momentum.
+> The frontend talks to `http://127.0.0.1:8000` — make sure Django is running first.
 
 ---
 
-## 🏗️ Design Decisions
+## 🧪 Running Tests
 
-* **Separation of Concerns:** The scoring logic is isolated in `tasks/engine.py`, keeping the Views clean and testable.
-* **Frontend Architecture:** Built with pure HTML/JS/CSS to ensure zero build-step latency, but styled with CSS Variables to mimic a React/Tailwind workflow.
-* **Safety:** The `Task` model includes validation to prevent Circular Dependencies (A waits for B waits for A).
-
----
-
-## 🧪 Testing
-Run the automated unit tests to verify the algorithm:
+Run the automated unit tests to verify the scoring algorithm:
 ```bash
 python manage.py test tasks
 ```
 
 ---
 
-## 🎨 User Interface
+## 🏛️ Design Decisions
 
-### Homepage - Main Dashboard
-The dashboard provides a sleek, dark-themed interface for task management with real-time prioritization.
-
-![Homepage](./Images/Homepage.png)
-
-### Smart Strategy Selection
-Switch between different prioritization strategies to match your workflow:
-
-![Smart Strategy](./Images/Smart.png)
-
-### Quick Session Management
-Quick wins feature for fast task completion tracking:
-
-![Quick Session](./Images/Quicksession.png)
-
-### Impact Analysis
-Visual breakdown of task impact on your workflow:
-
-![Impact Analysis](./Images/Impact.png)
-
-### Date-Based Sorting
-Organize tasks by deadline with intelligent date handling:
-
-![Date Sorting](./Images/Date.png)
+- **Separation of Concerns** — Scoring logic is fully isolated in `tasks/engine.py`, keeping Views thin and the algorithm independently testable.
+- **No Frontend Build Step** — Built with pure HTML/JS/CSS using CSS Variables to mimic a React/Tailwind workflow with zero tooling complexity.
+- **Circular Dependency Prevention** — The `Task` model's `clean()` method raises a `ValidationError` if a task is set to depend on itself.
+- **Hyperbolic vs Linear Urgency** — Linear day-counting treats day 1 and day 5 as nearly equal. The `30/(days+1)` curve makes urgency feel exponential, which matches real-world psychology.
 
 ---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — feel free to use, modify, and distribute.
+
+---
+
+## 👤 Author
+
+**Rakshit**
+- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
+
+---
+
+<div align="center">
+⭐ If you found this useful, please give it a star!
+</div>
